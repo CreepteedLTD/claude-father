@@ -48,6 +48,6 @@ fi
 
 mkdir -p "$HOME/.claude/father"
 tmux new-session -d -s "$SESSION" -c "$DIR" \
-  "claude$FLAGS 'Invoke the claude-father skill and follow it as your operating instructions for this session.'"
+  "claude 'Invoke the claude-father skill and follow it as your operating instructions for this session.'$FLAGS"
 echo "$SESSION started in $DIR (channels: $CHANNELS)."
 echo "Attach with: tmux attach -t $SESSION"
