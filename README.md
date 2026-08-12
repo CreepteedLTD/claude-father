@@ -43,8 +43,8 @@ claude plugin install imessage@claude-plugins-official   # macOS only
 
 ### iMessage (macOS)
 
-1. Grant your terminal **Full Disk Access** (System Settings → Privacy & Security) — macOS prompts on first run.
-2. Start the father (below), then iMessage **yourself** — self-chat works immediately, no pairing.
+1. Grant your terminal **Full Disk Access** — macOS silently denies it without prompting, so the start script checks first: if access is missing it opens the right System Settings pane and tells you which app to add. Add it, quit and reopen your terminal (Cmd-Q), rerun the script.
+2. Start the father (below), then iMessage **yourself** (Messages → ⌘N → your own number or Apple ID email) — self-chat works immediately, no pairing.
 3. First outbound reply triggers an Automation prompt ("control Messages") — click OK.
 4. Optionally allow other people: `/imessage:access allow +15551234567`
 

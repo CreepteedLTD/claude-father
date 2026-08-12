@@ -37,6 +37,24 @@ if [ -z "$CHANNELS" ]; then
   exit 1
 fi
 
+if [[ "$CHANNELS" == *imessage* && "$OSTYPE" == darwin* ]]; then
+  if ! sqlite3 "$HOME/Library/Messages/chat.db" "select 1" >/dev/null 2>&1; then
+    case "$TERM_PROGRAM" in
+      Apple_Terminal) APP="Terminal";;
+      iTerm.app) APP="iTerm";;
+      *) APP="${TERM_PROGRAM:-the app this terminal runs in}";;
+    esac
+    echo "The iMessage channel needs Full Disk Access, and macOS won't prompt for it."
+    echo "Opening System Settings → Privacy & Security → Full Disk Access now."
+    echo
+    echo "  1. Click '+', add '$APP', and turn its toggle ON"
+    echo "  2. Quit $APP completely (Cmd-Q) and reopen it"
+    echo "  3. Run this script again"
+    open "x-apple.systempreferences:com.apple.preference.security?Privacy_AllFiles"
+    exit 1
+  fi
+fi
+
 FLAGS=""
 for ch in ${(s:,:)CHANNELS}; do
   FLAGS="$FLAGS --channels plugin:$ch@claude-plugins-official"
