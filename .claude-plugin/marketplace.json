@@ -1,0 +1,14 @@
+{
+  "name": "claude-father",
+  "owner": {
+    "name": "Pavlo",
+    "email": "ipauler@gmail.com"
+  },
+  "plugins": [
+    {
+      "name": "claude-father",
+      "source": "./",
+      "description": "Orchestrator (father) session: control Claude Code sessions and parallel tasks from Telegram/iMessage"
+    }
+  ]
+}
