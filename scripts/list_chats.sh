@@ -4,7 +4,11 @@ N="${1:-15}"
 
 live_ids=$(cat "$HOME"/.claude/sessions/*.json 2>/dev/null | grep -o '"sessionId":"[^"]*"' | cut -d'"' -f4 | sort -u)
 
-ls -t "$HOME"/.claude/projects/*/*.jsonl 2>/dev/null | head -"$N" | while read -r f; do
+shown=0
+ls -t "$HOME"/.claude/projects/*/*.jsonl 2>/dev/null | while read -r f; do
+  [ "$shown" -ge "$N" ] && break
+  head -c 20000 "$f" | grep -q 'Invoke the claude-father skill' && continue
+  shown=$((shown + 1))
   id=$(basename "$f" .jsonl)
   ts=$(stat -f '%Sm' -t '%Y-%m-%d %H:%M' "$f" 2>/dev/null || stat -c '%y' "$f" | cut -c1-16)
   title=$(grep -o '"aiTitle":"[^"]*"' "$f" | tail -1 | cut -d'"' -f4)
