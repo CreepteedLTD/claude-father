@@ -16,6 +16,11 @@ done
 
 export PATH="$HOME/.bun/bin:$PATH"
 
+TOKEN_FILE="$HOME/.claude/channels/telegram/token"
+if [ -f "$TOKEN_FILE" ]; then
+  export "$(cat "$TOKEN_FILE")"
+fi
+
 for cmd in claude tmux; do
   command -v "$cmd" >/dev/null || { echo "$cmd not found — see README prerequisites"; exit 1; }
 done

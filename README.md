@@ -36,7 +36,7 @@ claude plugin install imessage@claude-plugins-official   # macOS only
 ### Telegram
 
 1. In Telegram, message [@BotFather](https://t.me/BotFather) → `/newbot` → pick a name and a username ending in `bot`. Copy the token (`123456789:AAH...`).
-2. In any `claude` session: `/telegram:configure <token>`
+2. In any `claude` session: `/telegram:configure <token>` — or put `TELEGRAM_BOT_TOKEN=<token>` in `~/.claude/channels/telegram/token` and the launcher exports it at start (useful if your permission rules block writing `.env` files)
 3. Start the father (below), then DM your bot — it replies with a 6-character pairing code.
 4. In the father session: `/telegram:access pair <code>`
 5. Lock it to your account: `/telegram:access policy allowlist`
