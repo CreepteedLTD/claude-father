@@ -36,12 +36,23 @@ Starts (or re-attaches to) a detached tmux session. Attach any time with `tmux a
 
 ## Use — message your bot (or yourself on iMessage)
 
-- "status" → summary of everything running
-- "show my 10 latest chats" → freshness-sorted list, live and dormant
-- "continue the <topic> chat" → revives that conversation with full context and relays your messages to it
-- "switch to <other chat>" / "back to you" → change or clear the focused chat
+- `/chats` (or "show my latest chats") → numbered, freshness-sorted list of your chats, live and dormant
+- reply with just a number → switch to that chat, reviving it with full context if it's offline
+- while focused, every message you send relays to that chat (a 👀 reaction confirms the forward; the answer comes back as the only reply)
+- `/back` (or "back to you") → stop relaying, talk to the father again
+- `/status` → summary of everything running
 - "run the tests in project X and fix failures" → spawns a background task
 - "tell the session working on the parser to also update the docs" → one-off relay
+
+**Telegram menu (optional, recommended):** in [@BotFather](https://t.me/BotFather) run `/setcommands`, pick your bot, paste:
+
+```
+chats - List my latest chats (reply a number to switch)
+status - What's running right now
+back - Stop relaying, talk to the father
+```
+
+The ☰ menu button then appears in the bot chat — tap `/chats`, type a digit, and you've switched sessions.
 
 ## Limits
 
