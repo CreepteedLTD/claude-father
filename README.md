@@ -1,4 +1,4 @@
-# claude-father
+# Claude Father
 
 One always-on Claude Code session ("father") you control from **Telegram** and/or **iMessage**. From one chat you can:
 

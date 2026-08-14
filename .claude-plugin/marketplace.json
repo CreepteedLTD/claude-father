@@ -8,7 +8,7 @@
     {
       "name": "claude-father",
       "source": "./",
-      "description": "Orchestrator (father) session: control Claude Code sessions and parallel tasks from Telegram/iMessage"
+      "description": "Claude Father — one always-on orchestrator session that controls your Claude Code sessions and parallel tasks from Telegram/iMessage"
     }
   ]
 }
