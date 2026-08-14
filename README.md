@@ -4,51 +4,27 @@ One always-on Claude Code session ("father") you control from **Telegram** and/o
 
 - start multiple tasks that run in parallel on your machine
 - get status of everything that's running
-- see and message your other open Claude Code sessions
+- list your chats by freshness — live and dormant — and revive any of them
+- focus on one chat and keep working with it from your phone, then switch to another
 - spawn new sessions (tmux windows or headless) for bigger tasks
 
-Built entirely on official Claude Code features: [channels](https://code.claude.com/docs/en/channels) (Telegram/iMessage plugins), cross-session messaging (ListAgents/SendMessage), and background agents. This plugin just adds the orchestrator skill + a launcher.
-
-## Prerequisites
-
-- macOS or Linux (iMessage channel: macOS only)
-- Claude Code **≥ 2.1.224** (`claude update`)
-- `tmux` (`brew install tmux`)
-- [Bun](https://bun.sh) — the channel servers run on it: `curl -fsSL https://bun.sh/install | bash`
+Built entirely on official Claude Code features: [channels](https://code.claude.com/docs/en/channels) (Telegram/iMessage plugins), cross-session messaging (ListAgents/SendMessage), and background agents. This plugin adds the orchestrator skill, a chat-listing script, and a launcher.
 
 ## Install
 
 ```sh
 git clone https://github.com/pashaverdi/claude-father.git
-claude plugin marketplace add ./claude-father
-claude plugin install claude-father@claude-father
+./claude-father/scripts/setup.sh
 ```
 
-Then install at least one channel:
+That's it. The script installs anything missing (tmux, Bun, the channel plugins), asks which channels you want, prompts for your Telegram bot token, checks macOS Full Disk Access for iMessage, enables cross-session messaging, and launches the father. The only steps it can't do for you:
 
-```sh
-claude plugin install telegram@claude-plugins-official
-claude plugin install imessage@claude-plugins-official   # macOS only
-```
+- **Telegram**: create the bot yourself — [@BotFather](https://t.me/BotFather) → `/newbot` → paste the token when the script asks. After launch, DM the bot once and approve the pairing code it gives you (`/telegram:access pair <code>` in the father session), then `/telegram:access policy allowlist`.
+- **iMessage (macOS)**: if Full Disk Access is missing, the script opens the right System Settings pane — add your terminal, reopen it, re-run. After launch, iMessage yourself and click OK on the one "control Messages" popup.
 
-## Channel setup (once per machine)
+Re-running `setup.sh` is safe — it skips whatever is already done.
 
-### Telegram
-
-1. In Telegram, message [@BotFather](https://t.me/BotFather) → `/newbot` → pick a name and a username ending in `bot`. Copy the token (`123456789:AAH...`).
-2. In any `claude` session: `/telegram:configure <token>` — or put `TELEGRAM_BOT_TOKEN=<token>` in `~/.claude/channels/telegram/token` and the launcher exports it at start (useful if your permission rules block writing `.env` files)
-3. Start the father (below), then DM your bot — it replies with a 6-character pairing code.
-4. In the father session: `/telegram:access pair <code>`
-5. Lock it to your account: `/telegram:access policy allowlist`
-
-### iMessage (macOS)
-
-1. Grant your terminal **Full Disk Access** — macOS silently denies it without prompting, so the start script checks first: if access is missing it opens the right System Settings pane and tells you which app to add. Add it, quit and reopen your terminal (Cmd-Q), rerun the script.
-2. Start the father (below), then iMessage **yourself** (Messages → ⌘N → your own number or Apple ID email) — self-chat works immediately, no pairing.
-3. First outbound reply triggers an Automation prompt ("control Messages") — click OK.
-4. Optionally allow other people: `/imessage:access allow +15551234567`
-
-## Run
+## Run / restart later
 
 ```sh
 ./claude-father/scripts/start.sh -d ~/work        # -d = directory the father works from
@@ -56,18 +32,24 @@ claude plugin install imessage@claude-plugins-official   # macOS only
 
 Flags: `-d workdir` (default: current dir), `-c telegram,imessage` (default: every installed channel plugin), `-s tmux-session-name` (default: `claude-father`).
 
-The script starts (or re-attaches to) a detached tmux session running `claude` with the channels enabled and the orchestrator skill as its instructions. Attach any time with `tmux attach -t claude-father`; detach with `Ctrl-b d`.
+Starts (or re-attaches to) a detached tmux session. Attach any time with `tmux attach -t claude-father`; detach with `Ctrl-b d`.
 
-## Use
+## Use — message your bot (or yourself on iMessage)
 
-Message your bot (or yourself on iMessage):
-
-- "run the tests in project X and fix failures" → spawns a background task
 - "status" → summary of everything running
-- "tell the session working on the parser to also update the docs" → relays to that session
+- "show my 10 latest chats" → freshness-sorted list, live and dormant
+- "continue the <topic> chat" → revives that conversation with full context and relays your messages to it
+- "switch to <other chat>" / "back to you" → change or clear the focused chat
+- "run the tests in project X and fix failures" → spawns a background task
+- "tell the session working on the parser to also update the docs" → one-off relay
 
 ## Limits
 
-- The father cannot answer **permission prompts** in spawned sessions — it will tell you which tmux window to attach to.
+- The father cannot answer **permission prompts** in spawned sessions — it tells you which tmux window to attach to.
 - Cross-session messages are plain text; the father steers other sessions by messaging them, not by driving their tools.
 - The father must stay running (the tmux session) for chat to reach it.
+- "Enable cross-session messaging" in setup sets `crossSessionInbound: "accept"` — your sessions auto-deliver messages from your *own* other local sessions without a desktop approval click. Decline it if you prefer approving each relay manually.
+
+## Manual setup (reference)
+
+Everything `setup.sh` automates, if you'd rather do it by hand: Claude Code ≥ 2.1.232 (`claude update`); `brew install tmux`; `curl -fsSL https://bun.sh/install | bash`; `claude plugin marketplace add ./claude-father && claude plugin install claude-father@claude-father`; `claude plugin install telegram@claude-plugins-official` and/or `imessage@claude-plugins-official`; Telegram token into `~/.claude/channels/telegram/token` as `TELEGRAM_BOT_TOKEN=<token>` (or `/telegram:configure <token>` in a session); `/config` → "Messages from your other sessions" → accept; then `scripts/start.sh`.
