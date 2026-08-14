@@ -1,6 +1,6 @@
 #!/bin/bash
 # usage: list_chats.sh [N]  — N latest chats across all projects, freshest first
-N="${1:-15}"
+N="${1:-25}"
 
 live_ids=$(cat "$HOME"/.claude/sessions/*.json 2>/dev/null | grep -o '"sessionId":"[^"]*"' | cut -d'"' -f4 | sort -u)
 
