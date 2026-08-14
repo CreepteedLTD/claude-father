@@ -25,9 +25,9 @@ Reply via the channel's `reply` tool. Keep replies short — they are read on a 
 4. **Spawn a full session** when a task needs its own long-lived interactive session:
    - `tmux new-window -t <father-session> -n <short-task-name> "cd <repo> && claude '<prompt>'"` — the user can attach to it later. The father tmux session name is `claude-father` unless the launcher was started with `-s`.
    - Headless alternative: `cd <repo> && claude -p '<prompt>' --output-format json` as a background command; capture `session_id` from the JSON and continue later with `claude -p --resume <session_id> '<message>'`.
-5. **Revive an offline chat** — past conversations without a live process are still resumable with full context. ListAgents only shows live sessions; the rest live as transcripts under `~/.claude/projects/<hyphenated-cwd-slug>/<session-id>.jsonl`. To revive one by its title:
-   - `grep -l '<distinctive title words>' ~/.claude/projects/*/*.jsonl` — the newest matching file's basename is the session id, and its parent directory name decodes to the working directory (hyphens for slashes).
-   - `tmux new-window -t <father-session> -n <short-name> "cd <decoded-dir> && claude --resume <session-id>"` — the chat is now a live session that can be messaged via SendMessage.
+5. **List chats by freshness** — `bash scripts/list_chats.sh [N]` (relative to this skill's directory) prints the N most recently active chats across all projects, freshest first: `timestamp | LIVE/off | title | session-id | working-dir`. Use it whenever the user asks what chats exist, what's recent, or which chat to continue — it covers both live sessions and dormant transcripts, unlike ListAgents.
+6. **Revive an offline chat** — pick its session id and working dir from list_chats.sh, then:
+   - `tmux new-window -t <father-session> -n <short-name> "cd <working-dir> && claude --resume <session-id>"` — the chat resumes with full context as a live session that can be messaged via SendMessage.
 
 ## Focus mode — working one chat from the phone
 
