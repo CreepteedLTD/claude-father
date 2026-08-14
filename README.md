@@ -12,27 +12,37 @@ Built entirely on official Claude Code features: [channels](https://code.claude.
 
 ## Install
 
+No clone needed — install as a plugin, then let Claude set itself up:
+
 ```sh
-git clone https://github.com/CreepteedLTD/claude-father.git
-./claude-father/scripts/setup.sh
+claude plugin marketplace add CreepteedLTD/claude-father
+claude plugin install claude-father@claude-father
 ```
 
-That's it. The script installs anything missing (tmux, Bun, the channel plugins), asks which channels you want, prompts for your Telegram bot token, checks macOS Full Disk Access for iMessage, enables cross-session messaging, and launches the father. The only steps it can't do for you:
+Then start any `claude` session and run:
+
+```
+/claude-father:setup
+```
+
+Claude walks you through the rest interactively: installs anything missing (tmux, Bun, the channel plugins), asks which channels you want, prompts for your Telegram bot token, checks macOS Full Disk Access for iMessage, enables cross-session messaging, and launches the father. Later, `/claude-father:start` relaunches it anytime. The only steps Claude can't do for you:
 
 - **Telegram**: create the bot yourself — [@BotFather](https://t.me/BotFather) → `/newbot` → paste the token when the script asks. After launch, DM the bot once and approve the pairing code it gives you (`/telegram:access pair <code>` in the father session), then `/telegram:access policy allowlist`.
 - **iMessage (macOS)**: if Full Disk Access is missing, the script opens the right System Settings pane — add your terminal, reopen it, re-run. After launch, iMessage yourself and click OK on the one "control Messages" popup.
 
-Re-running `setup.sh` is safe — it skips whatever is already done.
+Re-running `/claude-father:setup` is safe — it skips whatever is already done.
 
 ## Run / restart later
 
+`/claude-father:start` in any session — or directly:
+
 ```sh
-./claude-father/scripts/start.sh -d ~/work        # -d = directory the father works from
+<plugin dir>/scripts/start.sh -d ~/work        # -d = directory the father works from
 ```
 
 Flags: `-d workdir` (default: current dir), `-c telegram,imessage` (default: every installed channel plugin), `-s tmux-session-name` (default: `claude-father`).
 
-Starts (or re-attaches to) a detached tmux session. Attach any time with `tmux attach -t claude-father`; detach with `Ctrl-b d`.
+Starts (or re-attaches to) a detached tmux session. Attach any time with `tmux attach -t claude-father`; detach with `Ctrl-b d`. (If you prefer shell over skills: clone the repo and run `scripts/setup.sh` / `scripts/start.sh` — same result.)
 
 ## Use — message your bot (or yourself on iMessage)
 
