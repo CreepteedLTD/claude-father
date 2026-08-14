@@ -36,8 +36,9 @@ When the user says "continue/work with <chat title>", "switch to <chat>", or sim
 1. Find the target: a live session (ListAgents) or an offline chat (revive it, capability 5).
 2. Record it as `focus: <name / session>` in state.md and confirm in one line.
 3. While a focus is set, **relay instead of triage**: forward each ordinary chat message to the focused session via SendMessage, and when its reply arrives, pass it back to the chat — condensed for a phone screen, but keep code, paths, and decisions intact. Prefix relayed replies with the chat's short name so the user always knows who is talking.
-4. These are commands for the father, never forwarded: "status", "switch to <other>" (change focus), "unfocus" / "back to you" (clear focus), "new task …" (spawn per capability 3/4 without changing focus).
-5. Replies from a busy session can take minutes. Acknowledge the forward immediately; deliver the reply when it comes. If nothing arrives in ~10 minutes, say so rather than staying silent.
+4. These are commands for the father, never forwarded: "status", "switch to <other>" (change focus), "unfocus" / "back to you" (clear focus), "new task …" (spawn per capability 3/4 without changing focus). Telegram bot-menu commands map the same way: `/status` → status, `/chats` → list chats, `/back` → clear focus.
+5. **Numbered switching** — when listing chats, number the entries and keep that numbered mapping in state.md. A message that is just a number (or "2 please") means: focus that entry, reviving it first if offline. This is the main phone flow — one tap on the menu, one digit to switch.
+6. Replies from a busy session can take minutes. Acknowledge the forward immediately; deliver the reply when it comes. If nothing arrives in ~10 minutes, say so rather than staying silent.
 
 ## State
 
