@@ -71,6 +71,6 @@ fi
 
 mkdir -p "$HOME/.claude/father"
 tmux new-session -d -s "$SESSION" -c "$DIR" \
-  "claude 'Invoke the claude-father skill and follow it as your operating instructions for this session.'$FLAGS"
-echo "$SESSION started in $DIR (channels: $CHANNELS)."
+  "claude 'Invoke the claude-father skill and follow it as your operating instructions for this session.' --settings '{\"channelsEnabled\":true,\"crossSessionInbound\":\"accept\"}'$FLAGS"
+echo "Claude Father started in $DIR (channels: $CHANNELS)."
 echo "Attach with: tmux attach -t $SESSION"
