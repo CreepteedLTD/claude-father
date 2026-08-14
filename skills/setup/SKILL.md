@@ -15,4 +15,13 @@ Walk the user through a complete, idempotent setup. Check each item and skip wha
 5. **Settings** — nothing to edit: the launcher passes `channelsEnabled` and `crossSessionInbound` per-session via the `--settings` flag, so `~/.claude/settings.json` is never touched. One optional tip for the user: running `/config` → search "messages" → set "Messages from your other sessions" to accept lets chats they open *manually* also be relayed to the phone without a desktop approval click; sessions Claude Father spawns don't need it.
 6. **iMessage disk access** — if iMessage chosen: test `sqlite3 ~/Library/Messages/chat.db "select 1"`. On "authorization denied", open `x-apple.systempreferences:com.apple.preference.security?Privacy_AllFiles` and tell the user: add your terminal app, toggle on, fully quit and reopen the terminal, then re-run /claude-father:setup. Stop here until done — macOS never shows a prompt for this on its own.
 7. **Launch** — run the start skill's procedure (see the `start` skill, or execute `scripts/start.sh` from this plugin's root) with the user's chosen working directory.
+   - **Org-policy check**: ~20s after launch, run `tmux capture-pane -t claude-father -p` and look for "blocked by org policy". This happens on org-managed accounts (claude.ai Team/Enterprise), where channels are admin-gated and user/session settings cannot override. If found, give the user these options and stop until resolved:
+     1. Machine-admin fix (works unless the org pushes server-side managed settings):
+        ```sh
+        sudo mkdir -p "/Library/Application Support/ClaudeCode"
+        echo '{"channelsEnabled": true}' | sudo tee "/Library/Application Support/ClaudeCode/managed-settings.json"
+        ```
+        (Linux: `/etc/claude-code/managed-settings.json`.) Then `tmux kill-session -t claude-father` and relaunch.
+     2. Ask an org admin to enable channels for the org in claude.ai admin settings → Claude Code.
+     3. Log this machine into a personal (Pro/Max) account instead of the org account.
 8. **Hand off** — final message: Telegram: "DM your bot; it replies a pairing code; give it to me or run /telegram:access pair <code> in Claude Father session, then /telegram:access policy allowlist." iMessage: "iMessage yourself; click OK on the 'control Messages' popup after the first reply." Suggest the optional BotFather `/setcommands` menu (chats / status / back) from the README.

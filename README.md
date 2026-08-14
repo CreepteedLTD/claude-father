@@ -70,6 +70,7 @@ The ☰ menu button then appears in the bot chat — tap `/chats`, type a digit,
 - Cross-session messages are plain text; Claude Father steers other sessions by messaging them, not by driving their tools.
 - Claude Father must stay running (the tmux session) for chat to reach it.
 - "Enable cross-session messaging" in setup sets `crossSessionInbound: "accept"` — your sessions auto-deliver messages from your *own* other local sessions without a desktop approval click. Decline it if you prefer approving each relay manually.
+- **Org-managed accounts** (claude.ai Team/Enterprise): channels are admin-gated — the session reports "blocked by org policy" and messages are dropped. Setup detects this and offers the fixes: a machine-admin `managed-settings.json` with `channelsEnabled: true`, an org-admin toggle in claude.ai admin settings, or using a personal account. Personal Pro/Max accounts are unaffected.
 
 ## Manual setup (reference)
 
