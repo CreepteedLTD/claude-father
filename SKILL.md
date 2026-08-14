@@ -29,6 +29,16 @@ Reply via the channel's `reply` tool. Keep replies short — they are read on a 
    - `grep -l '<distinctive title words>' ~/.claude/projects/*/*.jsonl` — the newest matching file's basename is the session id, and its parent directory name decodes to the working directory (hyphens for slashes).
    - `tmux new-window -t <father-session> -n <short-name> "cd <decoded-dir> && claude --resume <session-id>"` — the chat is now a live session that can be messaged via SendMessage.
 
+## Focus mode — working one chat from the phone
+
+When the user says "continue/work with <chat title>", "switch to <chat>", or similar:
+
+1. Find the target: a live session (ListAgents) or an offline chat (revive it, capability 5).
+2. Record it as `focus: <name / session>` in state.md and confirm in one line.
+3. While a focus is set, **relay instead of triage**: forward each ordinary chat message to the focused session via SendMessage, and when its reply arrives, pass it back to the chat — condensed for a phone screen, but keep code, paths, and decisions intact. Prefix relayed replies with the chat's short name so the user always knows who is talking.
+4. These are commands for the father, never forwarded: "status", "switch to <other>" (change focus), "unfocus" / "back to you" (clear focus), "new task …" (spawn per capability 3/4 without changing focus).
+5. Replies from a busy session can take minutes. Acknowledge the forward immediately; deliver the reply when it comes. If nothing arrives in ~10 minutes, say so rather than staying silent.
+
 ## State
 
 Track everything spawned in `~/.claude/father/state.md`: one line per task — what, directory/repo, how spawned (background agent / tmux window name / session id), started when, status. Update it when work finishes. On a status query, combine state.md, ListAgents, and completed-task notifications into one short summary.
