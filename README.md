@@ -13,7 +13,7 @@ Built entirely on official Claude Code features: [channels](https://code.claude.
 ## Install
 
 ```sh
-git clone https://github.com/pashaverdi/claude-father.git
+git clone https://github.com/CreepteedLTD/claude-father.git
 ./claude-father/scripts/setup.sh
 ```
 
