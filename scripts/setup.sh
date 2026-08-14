@@ -64,6 +64,13 @@ if [[ "$a" != [Nn]* ]]; then
   fi
 fi
 
+S="$HOME/.claude/settings.json"
+if [ -f "$S" ]; then
+  tmp=$(mktemp) && jq '. + {channelsEnabled: true}' "$S" > "$tmp" && mv "$tmp" "$S"
+else
+  mkdir -p "$HOME/.claude" && echo '{"channelsEnabled": true}' > "$S"
+fi
+
 step "Launch"
 if tmux has-session -t claude-father 2>/dev/null; then
   read "a?A father session is already running — restart it? [y/N] "
