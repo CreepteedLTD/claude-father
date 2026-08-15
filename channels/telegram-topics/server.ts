@@ -285,7 +285,10 @@ function gate(ctx: Context): GateResult {
   if (chatType === 'group' || chatType === 'supergroup') {
     const groupId = String(ctx.chat!.id)
     const policy = access.groups[groupId]
-    if (!policy) return { action: 'drop' }
+    if (!policy) {
+      process.stderr.write(`telegram channel: dropped message from unapproved group ${groupId} ("${ctx.chat && 'title' in ctx.chat ? ctx.chat.title : '?'}") — allow with /claude-father:access group add ${groupId}\n`)
+      return { action: 'drop' }
+    }
     const groupAllowFrom = policy.allowFrom ?? []
     const requireMention = policy.requireMention ?? true
     if (groupAllowFrom.length > 0 && !groupAllowFrom.includes(senderId)) {
