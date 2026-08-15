@@ -25,10 +25,10 @@ for cmd in claude tmux; do
   command -v "$cmd" >/dev/null || { echo "$cmd not found — see README prerequisites"; exit 1; }
 done
 
+installed=$(claude plugin list 2>/dev/null)
 if [ -z "$CHANNELS" ]; then
-  installed=$(claude plugin list 2>/dev/null)
   for ch in telegram imessage discord; do
-    if echo "$installed" | grep -q "$ch@claude-plugins-official"; then
+    if echo "$installed" | grep -q "$ch@claude-plugins-official\|$ch-topics@claude-father"; then
       CHANNELS="$CHANNELS,$ch"
     fi
   done
@@ -62,7 +62,11 @@ fi
 
 FLAGS=""
 for ch in ${(s:,:)CHANNELS}; do
-  FLAGS="$FLAGS --channels plugin:$ch@claude-plugins-official"
+  if [ "$ch" = "telegram" ] && echo "$installed" | grep -q 'telegram-topics@claude-father'; then
+    FLAGS="$FLAGS --channels plugin:telegram-topics@claude-father"
+  else
+    FLAGS="$FLAGS --channels plugin:$ch@claude-plugins-official"
+  fi
 done
 
 if tmux has-session -t "$SESSION" 2>/dev/null; then
@@ -71,6 +75,6 @@ fi
 
 mkdir -p "$HOME/.claude/father"
 tmux new-session -d -s "$SESSION" -c "$DIR" \
-  "claude 'Invoke the claude-father skill and follow it as your operating instructions for this session.' --settings '{\"channelsEnabled\":true,\"crossSessionInbound\":\"accept\"}'$FLAGS"
+  "TELEGRAM_FORCE_POLL=1 claude 'Invoke the claude-father skill and follow it as your operating instructions for this session.' --settings '{\"channelsEnabled\":true,\"crossSessionInbound\":\"accept\"}'$FLAGS"
 echo "Claude Father started in $DIR (channels: $CHANNELS)."
 echo "Attach with: tmux attach -t $SESSION"

@@ -23,7 +23,7 @@ Reply via the channel's `reply` tool. Keep replies short — they are read on a 
 2. **Message sessions** — SendMessage sends plain text to another session. The target may hold the message for its user's approval; its permission prompts cannot be answered remotely.
 3. **Spawn parallel work** (default for new tasks) — Agent tool with `run_in_background: true`. A notification arrives on completion. Use worktree isolation if two agents touch the same repo.
 4. **Spawn a full session** when a task needs its own long-lived interactive session:
-   - `tmux new-window -t <father-session> -n <short-task-name> "cd <repo> && claude '<prompt>' --settings \"\$CHILD_SETTINGS\""` where `CHILD_SETTINGS='{"crossSessionInbound":"accept","enabledPlugins":{"telegram@claude-plugins-official":false,"imessage@claude-plugins-official":false}}'`.
+   - `tmux new-window -t <father-session> -n <short-task-name> "cd <repo> && claude '<prompt>' --settings \"\$CHILD_SETTINGS\""` where `CHILD_SETTINGS='{"crossSessionInbound":"accept","enabledPlugins":{"telegram@claude-plugins-official":false,"imessage@claude-plugins-official":false,"telegram-topics@claude-father":false}}'`.
    - The `enabledPlugins` part is CRITICAL: a child that loads the Telegram plugin steals the bot connection (one consumer per token) and Claude Father's channel goes down. Every spawned or revived session must have both channel plugins disabled. Claude Father tmux session name is `claude-father` unless the launcher was started with `-s`.
    - Headless alternative: `cd <repo> && claude -p '<prompt>' --output-format json` as a background command; capture `session_id` from the JSON and continue later with `claude -p --resume <session_id> '<message>'`.
 5. **List chats by freshness** — `bash scripts/list_chats.sh [N]` (relative to this skill's directory) prints the N most recently active chats across all projects, freshest first: `timestamp | LIVE/off | title | session-id | working-dir`. Use it whenever the user asks what chats exist, what's recent, or which chat to continue — it covers both live sessions and dormant transcripts, unlike ListAgents.
@@ -43,6 +43,16 @@ When the user says "continue/work with <chat title>", "switch to <chat>", or sim
 4. These are commands for Claude Father, never forwarded: "status", "switch to <other>" (change focus), "unfocus" / "back to you" (clear focus), "new task …" (spawn per capability 3/4 without changing focus). Telegram bot-menu commands map the same way: `/status` → status, `/chats` → list chats, `/back` → clear focus.
 5. **Numbered switching** — when listing chats, number the entries and keep that numbered mapping in state.md. A message that is just a number (or "2 please") means: focus that entry, reviving it first if offline. This is the main phone flow — one tap on the menu, one digit to switch.
 6. Replies from a busy session can take minutes. Acknowledge the forward immediately; deliver the reply when it comes. If nothing arrives in ~10 minutes, say so rather than staying silent.
+
+## Topics mode — Telegram forum group as the session browser
+
+Active when state.md contains `topics_group: <chat_id>` (set it when the user sends a message from a forum supergroup — its `<channel>` tag has a negative chat_id and a `message_thread_id`).
+
+- **Sync** (on "sync topics", or when entering topics mode): run `bash scripts/list_chats.sh`, and for each chat without a topic run `bash scripts/topics.sh create <group_id> "<title>"` → record `topic <id> ↔ session <session-id>` lines in state.md. Rename topics when chat titles change (`topics.sh rename`).
+- **Inbound routing**: a message whose `<channel>` tag carries `message_thread_id` belongs to that topic's session — relay it there (reviving if offline, per capability 6) exactly like focus mode, no focus switching needed. The topic IS the focus.
+- **Replies**: pass the same `message_thread_id` to the `reply` tool so answers land in the topic the user wrote in. The "General" topic (no thread id, or thread id 1) talks to Claude Father itself — status, new tasks, sync.
+- **New sessions** Claude Father spawns get a topic created immediately; include the topic id in state.md.
+- DM flow keeps working unchanged alongside topics.
 
 ## State
 
