@@ -56,6 +56,16 @@ The mapping lives in `~/.claude/father/topics.json` (`{"group": <chat_id>, "topi
 - **Replies**: pass the same `message_thread_id` to the `reply` tool so answers land in the topic the user wrote in. The "General" topic (no thread id, or thread id 1) talks to Claude Father itself — status, new tasks.
 - DM flow keeps working unchanged alongside topics.
 
+## Self-update — chat-driven, no terminal
+
+When the user says "update yourself" (or a fix you need is known to be shipped):
+
+1. `claude plugin marketplace update claude-father && claude plugin update claude-father@claude-father`
+2. Tell the user a restart is coming, then respawn yourself with the updated code:
+   `tmux new-window -d -t <father-session> -n updater "sleep 2; bash <plugin-root>/scripts/start.sh -r -d <your working dir>"`
+   The helper window replaces window 0 (you) with a fresh launch; the new instance re-invokes this skill automatically.
+3. On any startup, if a previous update was in flight, confirm to the user in chat that the update is live (plugin version is in the skill's frontmatter history / `claude plugin list`).
+
 ## State
 
 Track everything spawned in `~/.claude/father/state.md`: one line per task — what, directory/repo, how spawned (background agent / tmux window name / session id), started when, status. Update it when work finishes. On a status query, combine state.md, ListAgents, and completed-task notifications into one short summary.

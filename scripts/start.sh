@@ -1,15 +1,18 @@
 #!/bin/zsh
-# usage: start.sh [-d workdir] [-c telegram,imessage,discord] [-s tmux-session-name]
+# usage: start.sh [-d workdir] [-c telegram,imessage,discord] [-s tmux-session-name] [-r]
+#        -r: respawn window 0 of the existing session in place (self-update)
 set -e
 
 DIR="$PWD"
 CHANNELS=""
 SESSION="claude-father"
-while getopts "d:c:s:" opt; do
+RESPAWN=""
+while getopts "d:c:s:r" opt; do
   case $opt in
     d) DIR="$OPTARG";;
     c) CHANNELS="$OPTARG";;
     s) SESSION="$OPTARG";;
+    r) RESPAWN=1;;
     *) exit 1;;
   esac
 done
@@ -70,13 +73,20 @@ for ch in ${(s:,:)CHANNELS}; do
   fi
 done
 
+LAUNCH="TELEGRAM_FORCE_POLL=1 claude 'Invoke the claude-father skill and follow it as your operating instructions for this session.' --settings '{\"channelsEnabled\":true,\"crossSessionInbound\":\"accept\"}'$FLAGS"
+
+if [ -n "$RESPAWN" ]; then
+  tmux respawn-window -k -t "$SESSION:0" "cd \"$DIR\" && $LAUNCH"
+  echo "Claude Father respawned in $DIR (channels: $CHANNELS)."
+  exit 0
+fi
+
 if tmux has-session -t "$SESSION" 2>/dev/null; then
   exec tmux attach -t "$SESSION"
 fi
 
 mkdir -p "$HOME/.claude/father"
-tmux new-session -d -s "$SESSION" -c "$DIR" \
-  "TELEGRAM_FORCE_POLL=1 claude 'Invoke the claude-father skill and follow it as your operating instructions for this session.' --settings '{\"channelsEnabled\":true,\"crossSessionInbound\":\"accept\"}' --dangerously-load-development-channels$FLAGS"
+tmux new-session -d -s "$SESSION" -c "$DIR" "$LAUNCH"
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 if [ -f "$HOME/.claude/father/topics.json" ]; then
   "$SCRIPT_DIR/topics_sync.sh" >/dev/null 2>&1 &
