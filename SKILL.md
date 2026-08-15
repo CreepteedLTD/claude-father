@@ -46,12 +46,12 @@ When the user says "continue/work with <chat title>", "switch to <chat>", or sim
 
 ## Topics mode — Telegram forum group as the session browser
 
-Active when state.md contains `topics_group: <chat_id>` (set it when the user sends a message from a forum supergroup — its `<channel>` tag has a negative chat_id and a `message_thread_id`).
+The mapping lives in `~/.claude/father/topics.json` (`{"group": <chat_id>, "topics": {<session-id>: {topic, title, cwd}}}`), maintained by `bash scripts/topics_sync.sh` — idempotent, creates one topic per chat.
 
-- **Sync** (on "sync topics", or when entering topics mode): run `bash scripts/list_chats.sh`, and for each chat without a topic run `bash scripts/topics.sh create <group_id> "<title>"` → record `topic <id> ↔ session <session-id>` lines in state.md. Rename topics when chat titles change (`topics.sh rename`).
-- **Inbound routing**: a message whose `<channel>` tag carries `message_thread_id` belongs to that topic's session — relay it there (reviving if offline, per capability 6) exactly like focus mode, no focus switching needed. The topic IS the focus.
-- **Replies**: pass the same `message_thread_id` to the `reply` tool so answers land in the topic the user wrote in. The "General" topic (no thread id, or thread id 1) talks to Claude Father itself — status, new tasks, sync.
-- **New sessions** Claude Father spawns get a topic created immediately; include the topic id in state.md.
+- **Sync is automatic**: the launcher runs topics_sync.sh at every startup. Additionally run it (no arguments) after spawning or reviving any session, and whenever a chat you need has no topic yet. Never bookkeep topics by hand.
+- **First-time bootstrap**: when the first message from a forum supergroup arrives (negative chat_id + `message_thread_id` in the `<channel>` tag) and topics.json doesn't exist, run `bash scripts/topics_sync.sh <group_chat_id>` once.
+- **Inbound routing**: a message with `message_thread_id` belongs to that topic's session — look it up in topics.json and relay (reviving if offline, per capability 6). The topic IS the focus; no switching commands needed.
+- **Replies**: pass the same `message_thread_id` to the `reply` tool so answers land in the topic the user wrote in. The "General" topic (no thread id, or thread id 1) talks to Claude Father itself — status, new tasks.
 - DM flow keeps working unchanged alongside topics.
 
 ## State

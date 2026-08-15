@@ -77,5 +77,10 @@ fi
 mkdir -p "$HOME/.claude/father"
 tmux new-session -d -s "$SESSION" -c "$DIR" \
   "TELEGRAM_FORCE_POLL=1 claude 'Invoke the claude-father skill and follow it as your operating instructions for this session.' --settings '{\"channelsEnabled\":true,\"crossSessionInbound\":\"accept\"}'$FLAGS"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+if [ -f "$HOME/.claude/father/topics.json" ]; then
+  "$SCRIPT_DIR/topics_sync.sh" >/dev/null 2>&1 &
+fi
+
 echo "Claude Father started in $DIR (channels: $CHANNELS)."
 echo "Attach with: tmux attach -t $SESSION"
