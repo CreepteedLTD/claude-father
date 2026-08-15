@@ -8,12 +8,7 @@
     {
       "name": "claude-father",
       "source": "./",
-      "description": "Claude Father — one always-on orchestrator session that controls your Claude Code sessions and parallel tasks from Telegram/iMessage"
-    },
-    {
-      "name": "telegram-topics",
-      "source": "./channels/telegram-topics",
-      "description": "Telegram channel fork for Claude Father: forum-topic routing (message_thread_id in/out) and first-poller-wins bot ownership"
+      "description": "Claude Father — one always-on orchestrator session that controls your Claude Code sessions and parallel tasks from Telegram (built-in channel with forum-topics support) and iMessage"
     }
   ]
 }

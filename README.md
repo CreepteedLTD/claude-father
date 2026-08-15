@@ -27,7 +27,7 @@ Then start any `claude` session and run:
 
 Claude walks you through the rest interactively: installs anything missing (tmux, Bun, the channel plugins), asks which channels you want, prompts for your Telegram bot token, checks macOS Full Disk Access for iMessage, enables cross-session messaging, and launches Claude Father. Later, `/claude-father:start` relaunches it anytime. The only steps Claude can't do for you:
 
-- **Telegram**: create the bot yourself — [@BotFather](https://t.me/BotFather) → `/newbot` → paste the token when the script asks. After launch, DM the bot once and approve the pairing code it gives you (`/telegram:access pair <code>` in Claude Father session), then `/telegram:access policy allowlist`.
+- **Telegram**: create the bot yourself — [@BotFather](https://t.me/BotFather) → `/newbot` → paste the token when the script asks. After launch, DM the bot once and approve the pairing code it gives you (`/claude-father:access pair <code>` in Claude Father session), then `/claude-father:access policy allowlist`.
 - **iMessage (macOS)**: if Full Disk Access is missing, the script opens the right System Settings pane — add your terminal, reopen it, re-run. After launch, iMessage yourself and click OK on the one "control Messages" popup.
 
 Re-running `/claude-father:setup` is safe — it skips whatever is already done.
@@ -74,4 +74,4 @@ The ☰ menu button then appears in the bot chat — tap `/chats`, type a digit,
 
 ## Manual setup (reference)
 
-Everything `setup.sh` automates, if you'd rather do it by hand: Claude Code ≥ 2.1.232 (`claude update`); `brew install tmux`; `curl -fsSL https://bun.sh/install | bash`; `claude plugin marketplace add ./claude-father && claude plugin install claude-father@claude-father`; `claude plugin install telegram@claude-plugins-official` and/or `imessage@claude-plugins-official`; Telegram token into `~/.claude/channels/telegram/token` as `TELEGRAM_BOT_TOKEN=<token>` (or `/telegram:configure <token>` in a session); `/config` → "Messages from your other sessions" → accept; then `scripts/start.sh`.
+Everything `setup.sh` automates, if you'd rather do it by hand: Claude Code ≥ 2.1.232 (`claude update`); `brew install tmux`; `curl -fsSL https://bun.sh/install | bash`; `claude plugin marketplace add ./claude-father && claude plugin install claude-father@claude-father` (the Telegram channel is built in — a fork of the official plugin with forum-topics routing; iMessage needs `claude plugin install imessage@claude-plugins-official`); Telegram token into `~/.claude/channels/telegram/token` as `TELEGRAM_BOT_TOKEN=<token>` (or `/claude-father:configure <token>` in a session); then `scripts/start.sh` (it passes the required settings per-session).

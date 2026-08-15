@@ -1,8 +1,8 @@
 {
   "$schema": "https://anthropic.com/claude-code/plugin.schema.json",
   "name": "claude-father",
-  "version": "0.5.0",
-  "description": "Claude Father — one always-on orchestrator session that controls your Claude Code sessions and parallel tasks from Telegram/iMessage",
+  "version": "0.6.0",
+  "description": "Claude Father — one always-on orchestrator session that controls your Claude Code sessions and parallel tasks from Telegram (built-in channel with forum-topics support) and iMessage",
   "author": {
     "name": "Pavlo",
     "email": "ipauler@gmail.com"
@@ -10,6 +10,8 @@
   "skills": [
     "./",
     "./skills/setup",
-    "./skills/start"
+    "./skills/start",
+    "./channels/telegram-topics/skills/access",
+    "./channels/telegram-topics/skills/configure"
   ]
 }
