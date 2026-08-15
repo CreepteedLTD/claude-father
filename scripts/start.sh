@@ -67,7 +67,7 @@ fi
 FLAGS=""
 for ch in ${(s:,:)CHANNELS}; do
   if [ "$ch" = "telegram" ]; then
-    FLAGS="$FLAGS --channels plugin:claude-father@claude-father"
+    FLAGS="$FLAGS --dangerously-load-development-channels plugin:claude-father@claude-father"
   else
     FLAGS="$FLAGS --channels plugin:$ch@claude-plugins-official"
   fi
