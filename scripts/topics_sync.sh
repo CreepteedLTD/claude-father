@@ -7,11 +7,17 @@ MAP="$HOME/.claude/father/topics.json"
 mkdir -p "$HOME/.claude/father"
 GROUP="${1:-$(python3 -c "import json;print(json.load(open('$MAP'))['group'])" 2>/dev/null)}"
 [ -n "$GROUP" ] || { echo "no topics group configured — run: topics_sync.sh <group_chat_id>" >&2; exit 1; }
-[ -f "$MAP" ] || printf '{"group": "%s", "topics": {}}\n' "$GROUP" > "$MAP"
+[ -f "$MAP" ] || printf '{"group": "%s", "max_age_days": 7, "topics": {}}\n' "$GROUP" > "$MAP"
 
-"$DIR/list_chats.sh" 25 | while IFS='|' read -r ts state title sid cwd; do
-  sid=$(echo "$sid" | xargs); title=$(echo "$title" | xargs); cwd=$(echo "$cwd" | xargs)
+MAX_AGE_DAYS=$(python3 -c "import json;print(json.load(open('$MAP')).get('max_age_days',7))" 2>/dev/null || echo 7)
+CUTOFF=$(( $(date +%s) - MAX_AGE_DAYS * 86400 ))
+
+"$DIR/list_chats.sh" 50 | while IFS='|' read -r ts state title sid cwd; do
+  ts=$(echo "$ts" | xargs); sid=$(echo "$sid" | xargs); title=$(echo "$title" | xargs); cwd=$(echo "$cwd" | xargs)
   [ -n "$sid" ] || continue
+  [ "$title" = "<untitled>" ] && continue
+  te=$(date -j -f '%Y-%m-%d %H:%M' "$ts" +%s 2>/dev/null || date -d "$ts" +%s 2>/dev/null || echo 0)
+  [ "$te" -ge "$CUTOFF" ] || continue
   known=$(python3 -c "import json;print(json.load(open('$MAP'))['topics'].get('$sid',{}).get('topic',''))" 2>/dev/null)
   [ -n "$known" ] && continue
   tid=$("$DIR/topics.sh" create "$GROUP" "$title" 2>/dev/null) || continue
