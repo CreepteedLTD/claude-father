@@ -15,6 +15,7 @@ GROUP="${1:-$(python3 -c "import json;print(json.load(open('$MAP'))['group'])" 2
   known=$(python3 -c "import json;print(json.load(open('$MAP'))['topics'].get('$sid',{}).get('topic',''))" 2>/dev/null)
   [ -n "$known" ] && continue
   tid=$("$DIR/topics.sh" create "$GROUP" "$title" 2>/dev/null) || continue
+  [ -n "$tid" ] || { echo "could not create topic for '$title' — is the bot admin with Manage Topics?" >&2; continue; }
   python3 - "$sid" "$tid" "$title" "$cwd" <<PYEOF
 import json, sys
 d = json.load(open("$MAP"))
