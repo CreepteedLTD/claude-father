@@ -92,5 +92,9 @@ if [ -f "$HOME/.claude/father/topics.json" ]; then
   "$SCRIPT_DIR/topics_sync.sh" >/dev/null 2>&1 &
 fi
 
+if [[ "$CHANNELS" == *telegram* ]] && ! tmux list-windows -t "$SESSION" -F '#{window_name}' 2>/dev/null | grep -q '^watchdog$'; then
+  tmux new-window -d -t "$SESSION" -n watchdog "bash '$SCRIPT_DIR/watchdog.sh' '$SESSION' '$DIR'"
+fi
+
 echo "Claude Father started in $DIR (channels: $CHANNELS)."
 echo "Attach with: tmux attach -t $SESSION"
