@@ -6,7 +6,9 @@ One always-on Claude Code session ("father") you control from **Telegram** and/o
 - get status of everything that's running
 - list your chats by freshness — live and dormant — and revive any of them
 - focus on one chat and keep working with it from your phone, then switch to another
+- **use a Telegram forum group as your session browser** — one Topic per coding chat, type in a Topic to talk to that session
 - spawn new sessions (tmux windows or headless) for bigger tasks
+- approve tool-permission prompts from your phone (inline Allow/Deny buttons)
 
 Built entirely on official Claude Code features: [channels](https://code.claude.com/docs/en/channels) (Telegram/iMessage plugins), cross-session messaging (ListAgents/SendMessage), and background agents. This plugin adds the orchestrator skill, a chat-listing script, and a launcher.
 
@@ -32,6 +34,16 @@ Claude walks you through the rest interactively: installs anything missing (tmux
 
 Re-running `/claude-father:setup` is safe — it skips whatever is already done.
 
+> **First launch shows one confirmation**: the Telegram channel ships inside this plugin (a fork of the official one), and Claude Code asks you to confirm loading a non-official channel. If the bot seems silent right after setup: `tmux attach -t claude-father`, press **Enter** on the "local channel development" dialog, detach with `Ctrl-b d`. Once per machine.
+
+## Topics — a Telegram group as your session browser (optional, recommended)
+
+1. Create a new Telegram group → group settings → enable **Topics** → add your bot → promote it to **admin** with *Manage Topics*.
+2. In @BotFather: `/setprivacy` → your bot → **Disable** (then remove + re-add the bot to the group — Telegram quirk; re-grant admin).
+3. Copy any message link from the group (long-press a message → Copy Message Link) and send it to your bot in DM: "this is my topics group: <link>".
+
+The bot allowlists the group, creates one Topic per recent coding chat, and from then on: **type in a Topic → that session answers in the same Topic**. General topic = talk to Claude Father itself. Only chats active in the last 7 days get Topics — tell the bot "include chats up to a month" to widen it, or ask it to prune Topics you don't want.
+
 ## Run / restart later
 
 `/claude-father:start` in any session — or directly:
@@ -53,6 +65,8 @@ Starts (or re-attaches to) a detached tmux session. Attach any time with `tmux a
 - `/status` → summary of everything running
 - "run the tests in project X and fix failures" → spawns a background task
 - "tell the session working on the parser to also update the docs" → one-off relay
+- "update yourself" → the bot updates its own plugin and restarts
+- every received message gets an instant 👀 reaction — your "it's working" signal; a watchdog auto-heals the bot connection if it's ever lost
 
 **Telegram menu (optional, recommended):** in [@BotFather](https://t.me/BotFather) run `/setcommands`, pick your bot, paste:
 
