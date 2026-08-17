@@ -1,5 +1,6 @@
 {
   "name": "claude-father",
+  "description": "Claude Father — control your Claude Code sessions from Telegram/iMessage: parallel tasks, chat revival, and a forum-topics group as your session browser",
   "owner": {
     "name": "Pavlo",
     "email": "ipauler@gmail.com"
